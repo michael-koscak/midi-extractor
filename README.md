@@ -16,8 +16,15 @@ pip install numpy librosa soundfile pretty_midi crepe pydub
 The utility provides three modes of operation:
 
 ```bash
-python convert.py input_audio.[wav|mp3] output.mid --mode [mono|poly|drums]
+python convert.py input_audio.[wav|mp3] output.mid --mode [mono|poly|drums] [--bpm BPM]
 ```
+
+### Parameters
+
+- `input_audio.[wav|mp3]`: Path to the input audio file (WAV or MP3 format)
+- `output.mid`: Path to save the output MIDI file
+- `--mode`: Required conversion mode (mono, poly, or drums)
+- `--bpm`: Optional parameter to specify the tempo in beats per minute
 
 ### Modes
 
@@ -37,9 +44,9 @@ Extract chords from a piano recording (MP3 format):
 python convert.py piano.mp3 piano.mid --mode poly
 ```
 
-Extract a drum pattern:
+Extract a drum pattern with specific BPM:
 ```bash
-python convert.py drums.wav drums.mid --mode drums
+python convert.py drums.wav drums.mid --mode drums --bpm 120
 ```
 
 ## How It Works

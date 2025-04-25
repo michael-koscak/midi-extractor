@@ -4,7 +4,7 @@ import pretty_midi
 import librosa
 import os
 
-def convert_mono(input_audio, output_midi):
+def convert_mono(input_audio, output_midi, bpm=None):
     """
     Convert monophonic audio to MIDI by tracking pitch using CREPE.
     Supports WAV and MP3 formats.
@@ -12,6 +12,7 @@ def convert_mono(input_audio, output_midi):
     Args:
         input_audio (str): Path to input audio file (WAV or MP3)
         output_midi (str): Path to output MIDI file
+        bpm (float, optional): Beats per minute for the MIDI file. If None, no tempo is set.
     """
     # Use librosa to load the audio file regardless of format
     audio, sr = librosa.load(input_audio, sr=None)
@@ -19,8 +20,12 @@ def convert_mono(input_audio, output_midi):
     # CREPE pitch tracking
     time, frequency, confidence, _ = crepe.predict(audio, sr, viterbi=True)
 
-    # Create MIDI object
-    midi = pretty_midi.PrettyMIDI()
+    # Create MIDI object with optional BPM
+    if bpm is not None:
+        midi = pretty_midi.PrettyMIDI(initial_tempo=bpm)
+    else:
+        midi = pretty_midi.PrettyMIDI()  # No tempo specified
+        
     instrument = pretty_midi.Instrument(program=0)  # Piano by default
 
     # Convert detected pitches to MIDI notes

@@ -2,17 +2,20 @@ import numpy as np
 import librosa
 import pretty_midi
 import soundfile as sf
+import os
 
-def convert_poly(input_audio, output_midi):
+def convert_poly(input_audio, output_midi, bpm=None):
     """
     Convert polyphonic audio to MIDI using librosa for multiple pitch detection.
+    Supports WAV and MP3 formats.
     
     Args:
-        input_audio (str): Path to input audio file
+        input_audio (str): Path to input audio file (WAV or MP3)
         output_midi (str): Path to output MIDI file
+        bpm (float, optional): Beats per minute for the MIDI file. If None, no tempo is set.
     """
-    # Load audio file
-    audio, sr = sf.read(input_audio)
+    # Load audio file using librosa which supports multiple formats
+    audio, sr = librosa.load(input_audio, sr=None)
     
     # Convert to mono if needed
     if len(audio.shape) > 1:
@@ -28,8 +31,12 @@ def convert_poly(input_audio, output_midi):
     # Frame timing
     times = librosa.times_like(C, sr=sr, hop_length=hop_length)
     
-    # Create a MIDI object
-    midi = pretty_midi.PrettyMIDI()
+    # Create a MIDI object with optional BPM
+    if bpm is not None:
+        midi = pretty_midi.PrettyMIDI(initial_tempo=bpm)
+    else:
+        midi = pretty_midi.PrettyMIDI()  # No tempo specified
+        
     piano = pretty_midi.Instrument(program=0)  # Piano
     
     # Detect onsets for note segmentation
@@ -70,6 +77,4 @@ def convert_poly(input_audio, output_midi):
     midi.instruments.append(piano)
     
     # Write the MIDI file
-    midi.write(output_midi)# modes/poly.py
-def convert_poly(input_audio, output_midi):
-    raise NotImplementedError("Polyphonic mode coming soon!")
+    midi.write(output_midi)

@@ -4,7 +4,7 @@ import pretty_midi
 import soundfile as sf
 import os
 
-def convert_drums(input_audio, output_midi):
+def convert_drums(input_audio, output_midi, bpm=None):
     """
     Convert drum audio to MIDI by detecting onsets in different frequency bands.
     Supports WAV and MP3 formats.
@@ -12,6 +12,7 @@ def convert_drums(input_audio, output_midi):
     Args:
         input_audio (str): Path to input audio file (WAV or MP3)
         output_midi (str): Path to output MIDI file
+        bpm (float, optional): Beats per minute for the MIDI file. If None, no tempo is set.
     """
     # Load the audio file using librosa which supports multiple formats
     audio, sr = librosa.load(input_audio, sr=None)
@@ -31,8 +32,12 @@ def convert_drums(input_audio, output_midi):
         "hi-hat": (1200, 8000),  # MIDI note 42 (closed hi-hat)
     }
     
-    # Create a MIDI object
-    midi = pretty_midi.PrettyMIDI()
+    # Create a MIDI object with optional BPM
+    if bpm is not None:
+        midi = pretty_midi.PrettyMIDI(initial_tempo=bpm)
+    else:
+        midi = pretty_midi.PrettyMIDI()  # No tempo specified
+        
     drum_track = pretty_midi.Instrument(program=0, is_drum=True)
     
     # Process each band separately
